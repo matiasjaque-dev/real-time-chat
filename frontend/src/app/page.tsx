@@ -22,9 +22,9 @@ export default function Home() {
   }, []);
 
   return (
-    <main style={{ padding: 24 }}>
+    <main>
       <h1>Socket.io Test</h1>
-      <p>Abre la consola del navegador para ver los eventos.</p>
+      <p>Open the console</p>
     </main>
   );
 }
