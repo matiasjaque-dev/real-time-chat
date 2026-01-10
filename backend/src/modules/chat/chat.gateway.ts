@@ -9,6 +9,17 @@ export function registerChatGateway(io: Server) {
       socket.emit("pong");
     });
 
+    // Nuevo: evento de mensaje
+    socket.on("chat:message", (payload: { user: string; text: string }) => {
+      console.log(`💬 [${payload.user}] ${payload.text} @ ${socket.id}`);
+      // Difunde a todos (en todas las instancias gracias al adapter)
+      io.emit("chat:message", {
+        user: payload.user,
+        text: payload.text,
+        at: Date.now(),
+      });
+    });
+
     socket.on("disconnect", () => {
       console.log(`🔴 Socket disconnected: ${socket.id}`);
     });
