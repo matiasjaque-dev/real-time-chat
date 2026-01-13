@@ -3,6 +3,7 @@ import { app } from "./app";
 import { setupSocket } from "./config/socket";
 import { registerChatGateway } from "./modules/chat/chat.gateway";
 import { redisClient } from "./config/redis";
+import { connectMongo } from "./config/mongo";
 
 const PORT = process.env.PORT || 4000;
 
@@ -22,6 +23,14 @@ async function bootstrap() {
     console.log(`✅ Redis OK: ${value}`);
   } catch (err) {
     console.error("❌ Redis error:", err);
+  }
+
+  // Mongo (una vez)
+  try {
+    await connectMongo();
+  } catch (err) {
+    console.error("❌ Mongo error:", err);
+    process.exit(1);
   }
 
   httpServer.listen(PORT, () => {
