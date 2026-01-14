@@ -9,17 +9,30 @@ export default function Home() {
   const [user, setUser] = useState<string>("");
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [token, setToken] = useState<string>("");
 
-  // Usuario persistente
+  // Cargar user/token persistidos
   useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem("chat:user") : null;
-    const initial = saved && saved.trim() ? saved : `user-${Math.floor(Math.random() * 1000)}`;
-    setUser(initial);
-    if (!saved) localStorage.setItem("chat:user", initial);
+    const savedUser =
+      typeof window !== "undefined" ? localStorage.getItem("chat:user") : null;
+    const initialUser =
+      savedUser && savedUser.trim()
+        ? savedUser
+        : `user-${Math.floor(Math.random() * 1000)}`;
+    setUser(initialUser);
+    if (!savedUser) localStorage.setItem("chat:user", initialUser);
+
+    const savedToken =
+      typeof window !== "undefined"
+        ? localStorage.getItem("chat:token") ?? ""
+        : "";
+    setToken(savedToken);
   }, []);
 
+  // Conexión del socket sólo si hay token
   useEffect(() => {
-    const socket = getSocket();
+    if (!token) return;
+    const socket = getSocket(); // leerá el token desde localStorage
 
     const onConnect = () => {
       console.log("🟢 Connected to socket");
@@ -27,12 +40,7 @@ export default function Home() {
     };
     const onPong = () => console.log("🏓 Pong received");
     const onChat = (msg: ChatMessage) => setMessages((prev) => [...prev, msg]);
-
-    socket.on("connect", onConnect);
-    socket.on("pong", onPong);
-    socket.on("chat:message", onChat);
-    socket.on("chat_history", (msgs: any[]) => {
-      // adapta a tipo local si tu backend envía {userId, content, createdAt}
+    const onHistory = (msgs: any[]) => {
       setMessages(
         msgs.map((m: any) => ({
           user: m.userId ?? m.user,
@@ -40,27 +48,52 @@ export default function Home() {
           at: m.createdAt ? new Date(m.createdAt).getTime() : Date.now(),
         }))
       );
-    });
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("pong", onPong);
+    socket.on("chat:message", onChat);
+    socket.on("chat_history", onHistory);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("pong", onPong);
       socket.off("chat:message", onChat);
-      socket.off("chat_history");
+      socket.off("chat_history", onHistory);
       socket.disconnect();
     };
-  }, []);
+  }, [token]);
+
+  // Login: pide token al backend y lo guarda
+  const login = async () => {
+    if (!user.trim()) return;
+    const res = await fetch("http://localhost:3001/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user }),
+    });
+    if (!res.ok) {
+      console.error("Login error", await res.text());
+      return;
+    }
+    const data = await res.json();
+    localStorage.setItem("chat:token", data.token);
+    setToken(data.token);
+    console.log("🔑 Token guardado");
+  };
 
   const send = () => {
-    const socket = getSocket();
     if (!text.trim() || !user.trim()) return;
+    const socket = getSocket();
+    console.log("📤 Enviando mensaje:", { user, text });
     socket.emit("chat:message", { user, text });
     setText("");
   };
 
   return (
     <main style={{ padding: 24 }}>
-      <h1>Socket.io Test</h1>
+      <h1>Socket.io Chat</h1>
+
       <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
         <input
           value={user}
@@ -71,9 +104,22 @@ export default function Home() {
           }}
           placeholder="Usuario"
         />
-        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Mensaje" style={{ flex: 1 }} />
-        <button onClick={send}>Enviar</button>
+        <button onClick={login}>Login</button>
+        {token ? <span>✅ Auth</span> : <span>❌ No auth</span>}
       </div>
+
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Mensaje"
+          style={{ flex: 1 }}
+        />
+        <button onClick={send} disabled={!token}>
+          Enviar
+        </button>
+      </div>
+
       <ul>
         {messages.map((m, i) => (
           <li key={i}>

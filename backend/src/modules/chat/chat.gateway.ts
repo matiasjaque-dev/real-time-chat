@@ -3,53 +3,39 @@ import { MessageModel } from "../messages/message.model";
 
 export function registerChatGateway(io: Server) {
   io.on("connection", (socket: Socket) => {
-    console.log(`🟢 Socket connected: ${socket.id}`);
+    const userId = socket.data.userId as string | undefined;
+    console.log(`🟢 Socket connected: ${socket.id} user=${userId ?? "-"}`);
 
-    // Únete a la sala global
     socket.join("global");
 
-    // Enviar historial al conectarse
     (async () => {
       try {
         const messages = await MessageModel.find({ room: "global" })
           .sort({ createdAt: 1 })
           .limit(50)
           .lean();
-        socket.emit("chat_history", messages); // o "chat:history" si prefieres
+        socket.emit("chat_history", messages);
       } catch (e) {
         console.error("❌ Error enviando historial:", e);
       }
     })();
 
-    socket.on("ping", () => {
-      console.log(`📨 Ping from ${socket.id}`);
-      socket.emit("pong");
-    });
+    socket.on("chat:message", async (payload: { text: string }) => {
+      try {
+        const doc = await new MessageModel({
+          userId: userId ?? "anonymous",
+          content: payload.text,
+          room: "global",
+        }).save();
 
-    // Guardar y difundir mensajes
-    socket.on(
-      "chat:message",
-      async (payload: { user: string; text: string }) => {
-        try {
-          const doc = await new MessageModel({
-            userId: payload.user,
-            content: payload.text,
-            room: "global",
-          }).save();
-
-          io.to("global").emit("chat:message", {
-            user: payload.user,
-            text: payload.text,
-            at: doc.createdAt?.getTime?.() ?? Date.now(),
-          });
-        } catch (e) {
-          console.error("❌ Error guardando mensaje:", e);
-        }
+        io.to("global").emit("chat:message", {
+          user: userId ?? "anonymous",
+          text: payload.text,
+          at: doc.createdAt?.getTime?.() ?? Date.now(),
+        });
+      } catch (e) {
+        console.error("❌ Error guardando mensaje:", e);
       }
-    );
-
-    socket.on("disconnect", () => {
-      console.log(`🔴 Socket disconnected: ${socket.id}`);
     });
   });
 }
