@@ -1,4 +1,5 @@
 import { Server, Socket } from "socket.io";
+import { incUserSocket, decUserSocket, getOnlineUsers } from "../../shared/presence";
 import { MessageModel } from "../messages/message.model";
 
 export function registerChatGateway(io: Server) {
@@ -8,6 +9,7 @@ export function registerChatGateway(io: Server) {
 
     socket.join("global");
 
+    // Historial de chat
     (async () => {
       try {
         const messages = await MessageModel.find({ room: "global" })
@@ -20,6 +22,20 @@ export function registerChatGateway(io: Server) {
       }
     })();
 
+    // Presence: conexión
+    (async () => {
+      if (!userId) return;
+      try {
+        await incUserSocket(userId);
+        io.emit("user:online", { userId }); // incremental
+        const all = await getOnlineUsers();
+        io.emit("presence:update", { onlineUsers: all }); // snapshot
+      } catch (e) {
+        console.error("❌ presence inc error", e);
+      }
+    })();
+
+    // Chat
     socket.on("chat:message", async (payload: { text: string }) => {
       try {
         const doc = await new MessageModel({
@@ -35,6 +51,20 @@ export function registerChatGateway(io: Server) {
         });
       } catch (e) {
         console.error("❌ Error guardando mensaje:", e);
+      }
+    });
+
+    // Presence: desconexión
+    socket.on("disconnect", async () => {
+      console.log(`🔴 Socket disconnected: ${socket.id} user=${userId ?? "-"}`);
+      if (!userId) return;
+      try {
+        const becameOffline = await decUserSocket(userId);
+        if (becameOffline) io.emit("user:offline", { userId }); // incremental
+        const all = await getOnlineUsers();
+        io.emit("presence:update", { onlineUsers: all }); // snapshot
+      } catch (e) {
+        console.error("❌ presence dec error", e);
       }
     });
   });

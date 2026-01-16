@@ -10,6 +10,7 @@ export default function Home() {
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [token, setToken] = useState<string>("");
+  const [online, setOnline] = useState<string[]>([]); // NUEVO
 
   // Cargar user/token persistidos
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function Home() {
   // Conexión del socket sólo si hay token
   useEffect(() => {
     if (!token) return;
-    const socket = getSocket(); // leerá el token desde localStorage
+    const socket = getSocket();
 
     const onConnect = () => {
       console.log("🟢 Connected to socket");
@@ -50,16 +51,33 @@ export default function Home() {
       );
     };
 
+    // Presence listeners
+    const onPresenceUpdate = (payload: { onlineUsers: string[] }) => {
+      setOnline(payload.onlineUsers ?? []);
+    };
+    const onUserOnline = (payload: { userId: string }) => {
+      setOnline((prev) => (prev.includes(payload.userId) ? prev : [...prev, payload.userId]));
+    };
+    const onUserOffline = (payload: { userId: string }) => {
+      setOnline((prev) => prev.filter((u) => u !== payload.userId));
+    };
+
     socket.on("connect", onConnect);
     socket.on("pong", onPong);
     socket.on("chat:message", onChat);
     socket.on("chat_history", onHistory);
+    socket.on("presence:update", onPresenceUpdate);
+    socket.on("user:online", onUserOnline);
+    socket.on("user:offline", onUserOffline);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("pong", onPong);
       socket.off("chat:message", onChat);
       socket.off("chat_history", onHistory);
+      socket.off("presence:update", onPresenceUpdate);
+      socket.off("user:online", onUserOnline);
+      socket.off("user:offline", onUserOffline);
       socket.disconnect();
     };
   }, [token]);
@@ -118,6 +136,15 @@ export default function Home() {
         <button onClick={send} disabled={!token}>
           Enviar
         </button>
+      </div>
+
+      <div style={{ margin: "16px 0" }}>
+        <h3>Online users ({online.length})</h3>
+        <ul>
+          {online.map((u) => (
+            <li key={u}>{u}</li>
+          ))}
+        </ul>
       </div>
 
       <ul>
