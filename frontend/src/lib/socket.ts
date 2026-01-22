@@ -1,30 +1,48 @@
 import { io, Socket } from "socket.io-client";
 
-let socket: Socket | null = null;
+const BACKEND_URL = "http://localhost:4000";
+const TRANSPORT_METHOD = "websocket";
 
+/**
+ * Socket.io client singleton
+ * Maintains single persistent WebSocket connection to backend
+ * Handles authentication token and connection lifecycle
+ */
+let socketInstance: Socket | null = null;
+
+/**
+ * Get or create Socket.io client instance
+ * Automatically includes JWT token from localStorage in handshake
+ * @returns Socket.io client instance
+ */
 export function getSocket(): Socket {
-  if (!socket) {
+  if (!socketInstance) {
     const token =
       typeof window !== "undefined"
         ? localStorage.getItem("chat:token") ?? ""
         : "";
-    socket = io("http://localhost:3001", {
-      transports: ["websocket"],
-      auth: { token }, // enviar JWT
+
+    socketInstance = io(BACKEND_URL, {
+      transports: [TRANSPORT_METHOD],
+      auth: { token }, // JWT sent during handshake
     });
 
-    // Loguea errores de handshake (JWT inválido o ausente)
-    socket.on("connect_error", (err) => {
-      console.error("❌ socket connect_error:", err.message);
+    // Log authentication errors (invalid or missing JWT)
+    socketInstance.on("connect_error", (error) => {
+      console.error("❌ Socket connection error:", error.message);
     });
   }
-  return socket;
+
+  return socketInstance;
 }
 
-// Si cambias el token (login/logout), destruye el socket para reconectar con el nuevo token:
-export function resetSocket() {
-  if (socket) {
-    socket.disconnect();
-    socket = null;
+/**
+ * Destroy Socket.io connection and force reconnection
+ * Use after login/logout to establish new connection with updated token
+ */
+export function resetSocket(): void {
+  if (socketInstance) {
+    socketInstance.disconnect();
+    socketInstance = null;
   }
 }

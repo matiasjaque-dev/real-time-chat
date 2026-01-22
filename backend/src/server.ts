@@ -7,38 +7,51 @@ import { connectMongo } from "./config/mongo";
 
 const PORT = process.env.PORT || 4000;
 
+/**
+ * Initialize and start the backend server
+ * Bootstraps: HTTP server, Socket.io, Redis adapter, MongoDB connection
+ */
 async function bootstrap() {
-  const httpServer = createServer(app);
-
-  const io = setupSocket(httpServer);
-  registerChatGateway(io);
-
-  // Conectar Redis (node-redis v4 requiere connect())
   try {
-    if (!(redisClient as any).isOpen) {
-      await redisClient.connect();
+    // Create HTTP server from Express app
+    const httpServer = createServer(app);
+
+    // Initialize Socket.io with authentication middleware and Redis adapter
+    const io = setupSocket(httpServer);
+    registerChatGateway(io);
+
+    // ===== Redis Connection =====
+    // Connect Redis client for caching, sessions, and pub/sub
+    try {
+      if (!(redisClient as any).isOpen) {
+        await redisClient.connect();
+      }
+      // Verify connection with test operation
+      await redisClient.set("test", "hello redis");
+      const testValue = await redisClient.get("test");
+      console.log(`✅ Redis connected: ${testValue}`);
+    } catch (redisError) {
+      console.error("❌ Redis connection failed:", redisError);
+      throw redisError;
     }
-    await redisClient.set("test", "hello redis");
-    const value = await redisClient.get("test");
-    console.log(`✅ Redis OK: ${value}`);
-  } catch (err) {
-    console.error("❌ Redis error:", err);
-  }
 
-  // Mongo (una vez)
-  try {
-    await connectMongo();
-  } catch (err) {
-    console.error("❌ Mongo error:", err);
+    // ===== MongoDB Connection =====
+    // Connect to MongoDB for message persistence
+    try {
+      await connectMongo();
+    } catch (mongoError) {
+      console.error("❌ MongoDB connection failed:", mongoError);
+      process.exit(1);
+    }
+
+    // Start HTTP server and listen for connections
+    httpServer.listen(PORT, () => {
+      console.log(`🚀 Backend running on http://localhost:${PORT}`);
+    });
+  } catch (bootstrapError) {
+    console.error("❌ Bootstrap failed:", bootstrapError);
     process.exit(1);
   }
-
-  httpServer.listen(PORT, () => {
-    console.log(`🚀 Backend running on http://localhost:${PORT}`);
-  });
 }
 
-bootstrap().catch((err) => {
-  console.error("❌ Bootstrap error:", err);
-  process.exit(1);
-});
+bootstrap();
