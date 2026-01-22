@@ -5,8 +5,10 @@ import { getOnlineUsers } from "./shared/presence";
 
 export const app = express();
 
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: false }));
 app.use(express.json());
+
+app.post("/api/login", login);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
