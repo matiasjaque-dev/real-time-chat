@@ -383,6 +383,50 @@ docs: Actualizar documentación
 refactor: Refactorizar código
 ```
 
+## � Despliegue (Deployment)
+
+### Producción Rápida
+
+**Frontend (Vercel)**
+```bash
+npm i -g vercel
+cd frontend && vercel --prod
+```
+
+**Backend (Heroku)**
+```bash
+heroku login
+heroku create chat-app-prod
+git push heroku master
+```
+
+### Despliegue Detallado
+
+Para instrucciones completas de despliegue en todos los platforms:
+- ✅ Vercel (Frontend)
+- ✅ Heroku (Backend)
+- ✅ AWS (EC2/ECS/Lambda)
+- ✅ GCP (Cloud Run)
+- ✅ DigitalOcean
+- ✅ Docker Registry
+- ✅ Kubernetes
+
+👉 **[Ver DEPLOY.md](DEPLOY.md)** para el paso a paso completo.
+
+## 📊 Release Notes
+
+Última versión: **v1.0.0** (Production Ready)
+
+Cambios principales:
+- ✅ Aplicación completa lista para producción
+- ✅ 13+ documentos de guía
+- ✅ 11+ diagramas de arquitectura
+- ✅ Checklist de seguridad (40+ items)
+- ✅ Guías de deployment (7+ plataformas)
+- ✅ Estrategias de escalabilidad
+
+👉 **[Ver RELEASE_NOTES.md](RELEASE_NOTES.md)** para detalles completos.
+
 ## 📄 Licencia
 
 MIT
@@ -396,6 +440,8 @@ Las contribuciones son bienvenidas. Por favor:
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
 
+👉 **[Ver CONTRIBUTING.md](CONTRIBUTING.md)** para las guías completas de contribución.
+
 ---
 
-**¿Preguntas?** Abre un issue en el repositorio.
+**¿Preguntas?** Abre un issue en el repositorio o consulta [DOCUMENTATION.md](DOCUMENTATION.md) para más información.
