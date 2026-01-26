@@ -16,6 +16,7 @@ Una aplicación moderna de chat en tiempo real construida con **Next.js** y **No
 ## 📋 Stack Tecnológico
 
 ### Backend
+
 - **Node.js + Express** - Servidor HTTP
 - **TypeScript** - Type safety
 - **Socket.io** - WebSocket real-time
@@ -24,17 +25,20 @@ Una aplicación moderna de chat en tiempo real construida con **Next.js** y **No
 - **JWT** - Autenticación
 
 ### Frontend
+
 - **Next.js 16** - React framework
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Estilos
 - **Socket.io Client** - Cliente WebSocket
 
 ### DevOps
+
 - **Docker & Docker Compose** - Containerización
 
 ## 🚀 Inicio Rápido
 
 ### Requisitos Previos
+
 - Node.js 18+
 - Docker y Docker Compose
 - npm o yarn
@@ -42,12 +46,14 @@ Una aplicación moderna de chat en tiempo real construida con **Next.js** y **No
 ### Instalación
 
 1. **Clonar repositorio**
+
 ```bash
 git clone <repo-url>
 cd real-time-chat
 ```
 
 2. **Instalar dependencias**
+
 ```bash
 # Backend
 cd backend
@@ -61,6 +67,7 @@ npm install
 3. **Configurar variables de entorno**
 
 **Backend** - `.env`
+
 ```env
 PORT=4000
 NODE_ENV=development
@@ -71,11 +78,13 @@ FRONTEND_ORIGIN=http://localhost:3000
 ```
 
 **Frontend** - `.env.local`
+
 ```env
 NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
 ```
 
 4. **Levantar servicios con Docker**
+
 ```bash
 docker-compose up -d
 ```
@@ -83,18 +92,21 @@ docker-compose up -d
 5. **Iniciar aplicaciones**
 
 **Terminal 1 - Backend**
+
 ```bash
 cd backend
 npm run dev
 ```
 
 **Terminal 2 - Frontend**
+
 ```bash
 cd frontend
 npm run dev
 ```
 
 6. **Acceder a la aplicación**
+
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:4000
 
@@ -141,54 +153,64 @@ npm run dev
 #### Backend Modules
 
 **`/src/modules/auth`**
+
 - Autenticación de usuarios
 - Generación y validación de JWT
 
 **`/src/modules/chat`**
+
 - Chat Gateway - Manejo de eventos WebSocket
 - Broadcast de mensajes
 - Gestión de salas/rooms
 
 **`/src/modules/messages`**
+
 - Modelo de datos de mensajes
 - Persistencia en MongoDB
 - Historial de chat
 
 **`/src/config`**
+
 - `mongo.ts` - Conexión a MongoDB
 - `redis.ts` - Conexión a Redis y cliente
 - `socket.ts` - Configuración de Socket.io con JWT y Redis adapter
 
 **`/src/shared`**
+
 - `presence.ts` - Sistema de presencia en vivo
 - `rate-limit.ts` - Limitación de velocidad
 
 #### Frontend Components
 
 **`/app`**
+
 - `layout.tsx` - Layout principal
 - `page.tsx` - Página principal del chat
 
 **`/lib`**
+
 - `socket.ts` - Cliente Socket.io configurado
 
 ## 🔄 Flujo de Datos
 
 ### 1. Autenticación
+
 ```
 Usuario → Login → Backend JWT Generator → Token → LocalStorage
 Token → Socket Connection → JWT Verification → Conexión Establecida
 ```
 
 ### 2. Envío de Mensaje
+
 ```
 Usuario escribe → Envía evento "message" → Backend recibe
-Backend valida usuario → Guarda en MongoDB → 
+Backend valida usuario → Guarda en MongoDB →
 Publica evento en Redis → Redis adapter distribuye a todos
 Todos los clientes reciben evento "message:new" → UI se actualiza
 ```
 
 ### 3. Presencia (Online/Offline)
+
 ```
 User conecta → "user:online" event → Redis cache actualiza
 User desconecta → "user:offline" event → Redis cache actualiza
@@ -241,7 +263,7 @@ real-time-chat/
     └── app/
         ├── layout.tsx
         └── page.tsx
-    
+
     └── src/
         └── lib/
             └── socket.ts       # Cliente Socket.io
@@ -250,6 +272,7 @@ real-time-chat/
 ## 🛠️ Scripts de Desarrollo
 
 ### Backend
+
 ```bash
 npm run dev      # Desarrollo con hot-reload
 npm run build    # Compilar TypeScript
@@ -257,6 +280,7 @@ npm start        # Correr producción
 ```
 
 ### Frontend
+
 ```bash
 npm run dev      # Desarrollo en http://localhost:3000
 npm run build    # Compilar para producción
@@ -267,6 +291,7 @@ npm run lint     # Validar código
 ## 📡 Eventos WebSocket Principales
 
 ### Cliente → Servidor
+
 - `message:send` - Enviar mensaje
 - `typing:start` - Indicador de escritura
 - `typing:stop` - Detener indicador
@@ -274,6 +299,7 @@ npm run lint     # Validar código
 - `user:offline` - Usuario desconectado
 
 ### Servidor → Cliente
+
 - `message:new` - Nuevo mensaje recibido
 - `users:online` - Lista de usuarios conectados
 - `user:typing` - Indicador de escritura
@@ -290,6 +316,7 @@ npm run lint     # Validar código
 ## 📈 Escalabilidad
 
 ### Configuración Actual
+
 - ✅ Redis adapter para horizontal scaling
 - ✅ Pub/Sub para comunicación entre instancias
 - ✅ MongoDB para persistencia
@@ -298,6 +325,7 @@ npm run lint     # Validar código
 ### Para Escalar a Producción
 
 **1. Múltiples Instancias Backend**
+
 ```bash
 # Con load balancer (nginx, HAProxy)
 Backend 1 (4000) \
@@ -306,6 +334,7 @@ Backend 3 (4002) /
 ```
 
 **2. Redis Cluster**
+
 ```bash
 redis-1:6379
 redis-2:6379
@@ -313,6 +342,7 @@ redis-3:6379 (con replicación)
 ```
 
 **3. MongoDB Replica Set**
+
 ```bash
 mongo-1:27017
 mongo-2:27017
@@ -320,13 +350,16 @@ mongo-3:27017
 ```
 
 **4. CDN para Assets**
+
 - Servir archivos estáticos via CloudFront/Cloudflare
 
 **5. Monitoreo y Logging**
+
 - ELK Stack o Datadog
 - Prometheus + Grafana para métricas
 
 **6. Container Orchestration**
+
 - Kubernetes para orquestación automática
 - Helm charts para deployments
 
@@ -335,6 +368,7 @@ Ver [SCALING.md](./SCALING.md) para una guía completa.
 ## 🐛 Troubleshooting
 
 ### Redis no conecta
+
 ```bash
 # Verificar si Redis está corriendo
 docker ps | grep redis
@@ -344,6 +378,7 @@ docker-compose restart redis
 ```
 
 ### MongoDB no conecta
+
 ```bash
 # Verificar logs
 docker-compose logs mongo
@@ -353,11 +388,13 @@ docker-compose restart mongo
 ```
 
 ### WebSocket connection refused
+
 - Verificar que backend está corriendo en puerto 4000
 - Verificar CORS en `socket.ts` - debe permitir origin del frontend
 - Revisar token JWT está siendo enviado correctamente
 
 ### Mensajes no sincronizados entre pestañas
+
 - Asegurar Redis adapter está habilitado
 - Verificar Redis está conectado (logs del backend)
 
@@ -371,11 +408,13 @@ docker-compose restart mongo
 ## 👨‍💻 Desarrollo
 
 ### Crear una rama para nuevas features
+
 ```bash
 git checkout -b feature/nombre-feature
 ```
 
 ### Commit messages
+
 ```
 feat: Agregar nueva funcionalidad
 fix: Corregir bug
@@ -388,12 +427,14 @@ refactor: Refactorizar código
 ### Producción Rápida
 
 **Frontend (Vercel)**
+
 ```bash
 npm i -g vercel
 cd frontend && vercel --prod
 ```
 
 **Backend (Heroku)**
+
 ```bash
 heroku login
 heroku create chat-app-prod
@@ -403,6 +444,7 @@ git push heroku master
 ### Despliegue Detallado
 
 Para instrucciones completas de despliegue en todos los platforms:
+
 - ✅ Vercel (Frontend)
 - ✅ Heroku (Backend)
 - ✅ AWS (EC2/ECS/Lambda)
@@ -418,6 +460,7 @@ Para instrucciones completas de despliegue en todos los platforms:
 Última versión: **v1.0.0** (Production Ready)
 
 Cambios principales:
+
 - ✅ Aplicación completa lista para producción
 - ✅ 13+ documentos de guía
 - ✅ 11+ diagramas de arquitectura
@@ -434,6 +477,7 @@ MIT
 ## 🤝 Contribuciones
 
 Las contribuciones son bienvenidas. Por favor:
+
 1. Fork el proyecto
 2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
 3. Commit tus cambios (`git commit -m 'Add AmazingFeature'`)

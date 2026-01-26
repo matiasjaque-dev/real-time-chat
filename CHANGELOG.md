@@ -10,6 +10,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 ### 🎉 **Lanzamiento Inicial**
 
 #### Agregado
+
 - ✅ Aplicación real-time chat completa con WebSocket
 - ✅ Autenticación JWT (Backend)
 - ✅ Presencia de usuarios en tiempo real
@@ -28,6 +29,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 - ✅ Ambiente de desarrollo optimizado
 
 #### Backend Stack
+
 - **Runtime**: Node.js
 - **Framework**: Express 5
 - **WebSocket**: Socket.io 4.8.3 con Redis Adapter
@@ -38,6 +40,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 - **Language**: TypeScript 5.9
 
 #### Frontend Stack
+
 - **Framework**: Next.js 16.1.1
 - **UI**: React 19.2.3
 - **Styling**: Tailwind CSS 4
@@ -46,6 +49,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 - **Linting**: ESLint
 
 #### Infraestructura
+
 - Docker & Docker Compose
 - Nginx para load balancing
 - MongoDB 7 con replicaset ready
@@ -54,6 +58,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 - CI/CD ready (GitHub Actions template)
 
 #### Documentación
+
 - `README.md` - Guía principal (features, stack, quick start)
 - `ARCHITECTURE.md` - 11+ diagramas Mermaid (sistemas, flujos, BD, K8s)
 - `SCALING.md` - Guía escalabilidad (fases y estrategias)
@@ -69,6 +74,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 - `CHANGELOG.md` - Este archivo
 
 #### Características Principales
+
 ✨ **Real-time Messaging**: Entrega instantánea de mensajes
 🟢 **Online Status**: Presencia de usuarios actualizada en vivo
 📱 **Responsive Design**: Mobile, tablet y desktop
@@ -80,6 +86,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 🐳 **Containerizado**: Docker ready
 
 #### Testing Checklist
+
 - ✅ Backend local: `npm run dev`
 - ✅ Frontend local: `npm run dev`
 - ✅ Docker Compose: `docker-compose up`
@@ -91,6 +98,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 - ✅ Error handling: completo
 
 #### Deployment Ready
+
 - ✅ Vercel (frontend)
 - ✅ Heroku/Railway (backend)
 - ✅ AWS (EC2/ECS/ELB)
@@ -100,12 +108,14 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 - ✅ Kubernetes (manifests incluidos)
 
 #### Performance Targets
+
 - Backend P95: <100ms
 - Frontend Lighthouse: >90
 - WebSocket latency: <50ms
 - Message delivery: 99.9% reliability
 
 #### Security Checklist Pre-Deployment
+
 - ✅ Variables de entorno securizadas
 - ✅ Dependencias sin vulnerabilidades
 - ✅ Passwords hasheados con bcrypt
@@ -122,6 +132,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 ## Versiones Futuras (Roadmap)
 
 ### v1.1.0 - Scheduled
+
 - [ ] File upload/sharing
 - [ ] Message reactions
 - [ ] Read receipts
@@ -130,6 +141,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 - [ ] Dark mode
 
 ### v1.2.0 - Scheduled
+
 - [ ] Voice messages
 - [ ] Message editing
 - [ ] Message deletion
@@ -138,6 +150,7 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 - [ ] Status messages
 
 ### v2.0.0 - Scheduled
+
 - [ ] Group chats
 - [ ] Channels
 - [ ] Direct messages encryption
@@ -150,16 +163,19 @@ y este proyecto se adhiere al [Versionado Semántico](https://semver.org/lang/es
 ## Notas de Compatibilidad
 
 ### Navegadores Soportados (Frontend)
+
 - Chrome 90+
 - Firefox 88+
 - Safari 14+
 - Edge 90+
 
 ### Node.js Requerido
+
 - Backend: Node 18+
 - Frontend: Node 18+
 
 ### Base de Datos
+
 - MongoDB 4.4+
 - Redis 6.0+
 

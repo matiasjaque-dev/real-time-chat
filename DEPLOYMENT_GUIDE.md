@@ -26,6 +26,7 @@ Tu proyecto está **100% listo para producción**. Este documento es el **paso a
 ## 📍 TU ESTADO ACTUAL
 
 ### Git Status ✅
+
 ```
 Branch: master
 Commits: 2 nuevos desde última versión
@@ -34,6 +35,7 @@ Status: Clean working tree
 ```
 
 ### Archivos Agregados
+
 ```
 ✅ CHANGELOG.md       - Historial de versiones
 ✅ DEPLOY.md          - Guía deployment completa
@@ -42,6 +44,7 @@ Status: Clean working tree
 ```
 
 ### Commits Listos
+
 ```
 1. chore: v1.0.0 production release (843e51e)
 2. docs: add release notes and deployment links to README (fd5f4a0)
@@ -56,30 +59,36 @@ Status: Clean working tree
 #### Paso 1: Deploy Frontend en Vercel (5 minutos)
 
 **1.1 Instalar Vercel CLI**
+
 ```bash
 npm install -g vercel
 ```
 
 **1.2 Ir a carpeta frontend**
+
 ```bash
 cd frontend
 ```
 
 **1.3 Deploy**
+
 ```bash
 vercel --prod
 ```
+
 > Sigue los prompts. Vercel te pedirá confirmar y te dará la URL.
 
 **1.4 Configurar variables de entorno en Vercel**
 
 En Vercel Dashboard → Tu Proyecto → Settings → Environment Variables:
+
 ```
 NEXT_PUBLIC_API_URL=https://chat-api-prod.herokuapp.com
 NEXT_PUBLIC_WS_URL=wss://chat-api-prod.herokuapp.com
 ```
 
 **1.5 Re-deploy para aplicar variables**
+
 ```bash
 vercel --prod
 ```
@@ -95,12 +104,15 @@ vercel --prod
 Descargar desde: https://devcenter.heroku.com/articles/heroku-cli
 
 **2.2 Login en Heroku**
+
 ```bash
 heroku login
 ```
+
 > Se abrirá navegador para autenticarte
 
 **2.3 Crear aplicación Heroku**
+
 ```bash
 cd backend
 heroku create chat-api-prod
@@ -121,6 +133,7 @@ heroku config:set REDIS_URL=redis://user:pass@redis-host.cloud:port
 ```
 
 **2.5 Configurar variables de entorno**
+
 ```bash
 heroku config:set NODE_ENV=production
 heroku config:set JWT_SECRET=$(openssl rand -hex 32)
@@ -128,11 +141,13 @@ heroku config:set FRONTEND_ORIGIN=https://[tu-proyecto].vercel.app
 ```
 
 **2.6 Deploy código**
+
 ```bash
 git push heroku master
 ```
 
 **2.7 Verificar deployment**
+
 ```bash
 heroku logs --tail
 heroku open
@@ -344,6 +359,7 @@ git push origin hotfix/critical-issue
 ### Antes de ir a producción
 
 **En tu local:**
+
 ```bash
 # Compilar
 npm run build
@@ -359,6 +375,7 @@ npm run analyze
 ```
 
 **En staging:**
+
 ```bash
 # Performance
 ab -n 1000 -c 100 https://staging-api.com/health
@@ -375,6 +392,7 @@ npm audit
 ## 🆘 EN CASO DE PROBLEMA
 
 ### Frontend no carga
+
 ```bash
 # 1. Check logs en plataforma
 # Vercel → Deployments → Logs
@@ -390,6 +408,7 @@ vercel rollback
 ```
 
 ### Backend no responde
+
 ```bash
 # 1. Check logs
 heroku logs --tail
@@ -410,6 +429,7 @@ git push heroku master
 ```
 
 ### WebSocket no conecta
+
 ```bash
 # 1. Verificar en console del navegador
 # ¿Error en conexión Socket.io?
@@ -433,6 +453,7 @@ heroku restart
 ### Configurar Alertas
 
 **Opción 1: Sentry (Errores)**
+
 ```bash
 npm install @sentry/node
 # En server.ts:
@@ -441,12 +462,14 @@ Sentry.init({ dsn: "..." });
 ```
 
 **Opción 2: Datadog (Métricas)**
+
 ```bash
 npm install dd-trace
 # Instrumenta automáticamente
 ```
 
 **Opción 3: LogRocket (User Monitoring)**
+
 ```bash
 # Frontend
 npm install logrocket
@@ -475,17 +498,20 @@ LogRocket.init('your-app-id');
 Después de deploy exitoso:
 
 ### Inmediato (Hoy)
+
 1. ✅ Monitorear por 24 horas
 2. ✅ Estar disponible para hotfixes
 3. ✅ Documentar cualquier issue
 
 ### Corto Plazo (Esta semana)
+
 1. Recopilar feedback de usuarios
 2. Monitorear performance
 3. Hacer primeros optimizations
 4. Plan para v1.1.0
 
 ### Mediano Plazo (Este mes)
+
 1. Agregar features basado en feedback
 2. Optimizar performance
 3. Security audit

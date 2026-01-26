@@ -22,19 +22,23 @@
 ## Pre-requisitos
 
 ### Herramientas Requeridas
+
 - Git
 - Node.js 18+ (verificar con `node --version`)
 - Docker & Docker Compose
 - npm o yarn
 
 ### Cuentas Necesarias
+
 - GitHub (para código)
 - MongoDB Atlas o server MongoDB
 - Redis (cloud o self-hosted)
 - Platform de hosting (Vercel, Heroku, AWS, etc.)
 
 ### Variables de Entorno
+
 Crear `.env` basado en `.env.example`:
+
 ```bash
 # Backend
 cp backend/.env.example backend/.env
@@ -76,6 +80,7 @@ npm run dev
 ```
 
 ### Verificar en Local
+
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:3001
 - MongoDB: localhost:27017
@@ -86,6 +91,7 @@ npm run dev
 ## Staging Environment
 
 ### Propósito
+
 - Probar en entorno similar a producción
 - Validar todas las integraciones
 - Hacer performance testing
@@ -215,6 +221,7 @@ vercel --prod
 ```
 
 **Configuración en Vercel:**
+
 ```env
 NEXT_PUBLIC_API_URL=https://api.yourdomain.com
 NEXT_PUBLIC_WS_URL=wss://api.yourdomain.com
@@ -253,6 +260,7 @@ heroku ps:scale web=2
 ### 3️⃣ AWS (Backend Opción 2)
 
 **Opción A: EC2 + PM2**
+
 ```bash
 # 1. SSH al servidor
 ssh -i key.pem ubuntu@ec2-xxx.xxx.xxx.xxx
@@ -278,6 +286,7 @@ sudo systemctl restart nginx
 ```
 
 **Opción B: ECS (Fargate)**
+
 ```bash
 # 1. Build Docker image
 docker build -t chat-api:1.0.0 .
@@ -294,6 +303,7 @@ terraform apply
 ### 4️⃣ GCP (Backend Opción 3)
 
 **Cloud Run:**
+
 ```bash
 # 1. Build image
 gcloud builds submit --tag gcr.io/PROJECT_ID/chat-api
@@ -480,6 +490,7 @@ git commit -m "fix: issue that caused rollback"
 ### Setup Monitoring Stack
 
 **Option 1: ELK Stack (Self-hosted)**
+
 ```yaml
 # docker-compose.yml
 elasticsearch:
@@ -493,6 +504,7 @@ logstash:
 ```
 
 **Option 2: Managed Services**
+
 - Datadog: `npm install dd-trace`
 - New Relic: `npm install newrelic`
 - Sentry: `npm install @sentry/node`
@@ -542,6 +554,7 @@ REDIS DOWN: → immediate alert
 ## Emergency Procedures
 
 ### Database Down
+
 ```bash
 # 1. Alert team immediately
 # 2. Switch to backup database
@@ -551,6 +564,7 @@ REDIS DOWN: → immediate alert
 ```
 
 ### Redis Down
+
 ```bash
 # 1. Alert team
 # 2. Restart Redis
@@ -560,6 +574,7 @@ REDIS DOWN: → immediate alert
 ```
 
 ### DDoS Attack
+
 ```bash
 # 1. Enable CloudFlare/DDoS protection
 # 2. Rate limit aggressively
@@ -569,6 +584,7 @@ REDIS DOWN: → immediate alert
 ```
 
 ### Data Breach
+
 ```bash
 # 1. Take site down immediately
 # 2. Investigate
@@ -584,21 +600,25 @@ REDIS DOWN: → immediate alert
 ## Maintenance Schedule
 
 ### Daily
+
 - [ ] Check error logs
 - [ ] Verify backups completed
 - [ ] Monitor system resources
 
 ### Weekly
+
 - [ ] Review performance metrics
 - [ ] Check for security updates
 - [ ] Update dependencies if needed
 
 ### Monthly
+
 - [ ] Full system audit
 - [ ] Update documentation
 - [ ] Review and update runbooks
 
 ### Quarterly
+
 - [ ] Disaster recovery drill
 - [ ] Security assessment
 - [ ] Capacity planning
@@ -637,6 +657,7 @@ curl -w "@curl-format.txt" https://api.yourdomain.com/health
 ## Support & Escalation
 
 **For Issues:**
+
 1. Check monitoring dashboard first
 2. Review error logs
 3. Check [SECURITY.md](SECURITY.md) for security issues
@@ -644,6 +665,7 @@ curl -w "@curl-format.txt" https://api.yourdomain.com/health
 5. Escalate to on-call engineer if critical
 
 **Critical Issues:** 🚨
+
 - Page completely down
 - Data being corrupted
 - Security breach
