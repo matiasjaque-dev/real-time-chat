@@ -21,18 +21,26 @@ async function bootstrap() {
     registerChatGateway(io);
 
     // ===== Redis Connection =====
-    // Connect Redis client for caching, sessions, and pub/sub
-    try {
-      if (!(redisClient as any).isOpen) {
-        await redisClient.connect();
+    // Connect Redis client for caching, sessions, and pub/sub (optional)
+    if (redisClient) {
+      try {
+        if (!(redisClient as any).isOpen) {
+          await redisClient.connect();
+        }
+        // Verify connection with test operation
+        await redisClient.set("test", "hello redis");
+        const testValue = await redisClient.get("test");
+        console.log(`✅ Redis connected: ${testValue}`);
+      } catch (redisError) {
+        console.error("❌ Redis connection failed:", redisError);
+        console.warn(
+          "⚠️ Continuing without Redis. Certain features may be unavailable.",
+        );
       }
-      // Verify connection with test operation
-      await redisClient.set("test", "hello redis");
-      const testValue = await redisClient.get("test");
-      console.log(`✅ Redis connected: ${testValue}`);
-    } catch (redisError) {
-      console.error("❌ Redis connection failed:", redisError);
-      throw redisError;
+    } else {
+      console.warn(
+        "⚠️ Redis client not configured. Skipping Redis connection.",
+      );
     }
 
     // ===== MongoDB Connection =====

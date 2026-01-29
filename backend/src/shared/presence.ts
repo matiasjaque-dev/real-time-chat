@@ -3,22 +3,21 @@ import { redisClient } from "../config/redis";
 const ONLINE_USERS_KEY = "online:users"; // Redis Set of currently online user IDs
 const USER_SOCKET_COUNT_PREFIX = "online:user:"; // Redis counter for each user's active sockets
 
-/**
- * User presence tracking system
- * Tracks online users via Redis:
- * - ONLINE_USERS_KEY: Set of all online user IDs
- * - USER_SOCKET_COUNT_PREFIX:userId: Counter of active socket connections per user
- *
- * This supports multiple concurrent connections per user (mobile + web, multiple tabs, etc.)
- * User is considered offline only when all socket connections disconnect
- */
+// In-memory fallback when Redis is not available (single-instance mode)
+const inMemoryOnline = new Set<string>();
+const inMemorySocketCounts = new Map<string, number>();
 
 /**
  * Add a user ID to the online users set
  * @param userId - User identifier to mark as online
  */
 async function addOnlineUser(userId: string): Promise<void> {
-  await redisClient.sAdd(ONLINE_USERS_KEY, userId);
+  if (redisClient) {
+    await redisClient.sAdd(ONLINE_USERS_KEY, userId);
+    return;
+  }
+
+  inMemoryOnline.add(userId);
 }
 
 /**
@@ -26,7 +25,12 @@ async function addOnlineUser(userId: string): Promise<void> {
  * @param userId - User identifier to mark as offline
  */
 async function removeOnlineUser(userId: string): Promise<void> {
-  await redisClient.sRem(ONLINE_USERS_KEY, userId);
+  if (redisClient) {
+    await redisClient.sRem(ONLINE_USERS_KEY, userId);
+    return;
+  }
+
+  inMemoryOnline.delete(userId);
 }
 
 /**
@@ -34,7 +38,11 @@ async function removeOnlineUser(userId: string): Promise<void> {
  * @returns Array of user IDs currently online
  */
 export async function getOnlineUsers(): Promise<string[]> {
-  return await redisClient.sMembers(ONLINE_USERS_KEY);
+  if (redisClient) {
+    return await redisClient.sMembers(ONLINE_USERS_KEY);
+  }
+
+  return Array.from(inMemoryOnline.values());
 }
 
 /**
@@ -44,8 +52,16 @@ export async function getOnlineUsers(): Promise<string[]> {
  */
 export async function incUserSocket(userId: string): Promise<void> {
   const socketCountKey = `${USER_SOCKET_COUNT_PREFIX}${userId}`;
-  await redisClient.incr(socketCountKey);
-  await addOnlineUser(userId);
+
+  if (redisClient) {
+    await redisClient.incr(socketCountKey);
+    await addOnlineUser(userId);
+    return;
+  }
+
+  const current = inMemorySocketCounts.get(userId) ?? 0;
+  inMemorySocketCounts.set(userId, current + 1);
+  inMemoryOnline.add(userId);
 }
 
 /**
@@ -56,14 +72,27 @@ export async function incUserSocket(userId: string): Promise<void> {
  */
 export async function decUserSocket(userId: string): Promise<boolean> {
   const socketCountKey = `${USER_SOCKET_COUNT_PREFIX}${userId}`;
-  const remainingConnections = await redisClient.decr(socketCountKey);
 
-  // User is offline only when all socket connections have closed
-  if (remainingConnections <= 0) {
-    await redisClient.del(socketCountKey);
-    await removeOnlineUser(userId);
-    return true; // User transitioned to offline
+  if (redisClient) {
+    const remainingConnections = await redisClient.decr(socketCountKey);
+
+    // User is offline only when all socket connections have closed
+    if (remainingConnections <= 0) {
+      await redisClient.del(socketCountKey);
+      await removeOnlineUser(userId);
+      return true; // User transitioned to offline
+    }
+
+    return false; // User still has active connections
   }
 
-  return false; // User still has active connections
+  const current = (inMemorySocketCounts.get(userId) ?? 1) - 1;
+  if (current <= 0) {
+    inMemorySocketCounts.delete(userId);
+    inMemoryOnline.delete(userId);
+    return true;
+  }
+
+  inMemorySocketCounts.set(userId, current);
+  return false;
 }
