@@ -1,6 +1,7 @@
 import { io, Socket } from "socket.io-client";
 
-const BACKEND_URL = "http://localhost:4000";
+// Use environment variable in production (set in Vercel) or fallback to localhost for development
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
 const TRANSPORT_METHOD = "websocket";
 
 /**
