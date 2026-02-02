@@ -32,7 +32,17 @@ export function setupSocket(httpServer: ReturnType<typeof createServer>) {
 
   // ===== Redis Adapter Setup =====
   // Configure Redis pub/sub for multi-instance horizontal scaling if REDIS_URL is provided
-  if (REDIS_URL) {
+  function isValidRedisUrl(url?: string) {
+    if (!url) return false;
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === "redis:" || parsed.protocol === "rediss:";
+    } catch {
+      return false;
+    }
+  }
+
+  if (isValidRedisUrl(REDIS_URL)) {
     try {
       const pubClient = createClient({ url: REDIS_URL });
       const subClient = pubClient.duplicate();
@@ -55,9 +65,15 @@ export function setupSocket(httpServer: ReturnType<typeof createServer>) {
       );
     }
   } else {
-    console.warn(
-      "⚠️ REDIS_URL not set. Socket.io will run without Redis adapter (single-instance mode).",
-    );
+    if (REDIS_URL) {
+      console.error(
+        "❌ REDIS_URL is invalid. Expected scheme redis:// or rediss://. Socket.io will run without Redis adapter.",
+      );
+    } else {
+      console.warn(
+        "⚠️ REDIS_URL not set. Socket.io will run without Redis adapter (single-instance mode).",
+      );
+    }
   }
 
   // ===== JWT Authentication Middleware =====

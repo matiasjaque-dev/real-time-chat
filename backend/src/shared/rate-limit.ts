@@ -33,7 +33,10 @@ export async function checkRateLimit(userId: string): Promise<boolean> {
   const now = Date.now();
   const existing = inMemoryRate.get(userId);
   if (!existing || existing.expiresAt <= now) {
-    inMemoryRate.set(userId, { count: 1, expiresAt: now + RATE_LIMIT_WINDOW_SECONDS * 1000 });
+    inMemoryRate.set(userId, {
+      count: 1,
+      expiresAt: now + RATE_LIMIT_WINDOW_SECONDS * 1000,
+    });
     return true;
   }
 
