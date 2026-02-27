@@ -1,3 +1,8 @@
+import dotenv from "dotenv";
+
+// load .env early so any module can access process.env settings
+dotenv.config();
+
 import { createServer } from "http";
 import { app } from "./app";
 import { setupSocket } from "./config/socket";

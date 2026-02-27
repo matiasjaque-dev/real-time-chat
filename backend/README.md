@@ -430,6 +430,12 @@ socket.on("error", (error) => {
 
 ## ⚙️ Configuración
 
+Antes de ejecutar el servidor en desarrollo copia `.env.example` a `.env` y completa las variables necesarias (especialmente `REDIS_URL`, `MONGODB_URI`, `FRONTEND_ORIGIN` y `JWT_SECRET`).
+
+- Si trabajas localmente, asigna `FRONTEND_ORIGIN=http://localhost:3000` en el `.env` (el código también acepta este origen automáticamente cuando `NODE_ENV=development`).
+
+El servidor carga automáticamente `.env` mediante `dotenv` al arrancar, por lo que no es necesario exportar cada variable manualmente.
+
 ### MongoDB Connection (`src/config/mongo.ts`)
 
 ```typescript
@@ -668,6 +674,7 @@ describe("Auth Service", () => {
    ```
 
 5. **Nginx Reverse Proxy**
+
    ```nginx
    server {
      listen 80;
